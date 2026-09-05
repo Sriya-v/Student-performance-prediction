@@ -1,0 +1,74 @@
+# Student Performance Prediction using Machine Learning
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score
+
+
+# Creating sample dataset
+data = {
+    "Hours_Studied": [5, 2, 8, 3, 7, 4, 9, 6, 1, 10],
+    "Attendance": [90, 60, 95, 70, 85, 75, 98, 88, 50, 100],
+    "Previous_Score": [80, 50, 90, 60, 85, 65, 95, 75, 40, 98],
+    "Result": [
+        "Pass", "Fail", "Pass", "Fail",
+        "Pass", "Fail", "Pass", "Pass",
+        "Fail", "Pass"
+    ]
+}
+
+
+# Convert dataset into DataFrame
+df = pd.DataFrame(data)
+
+
+# Convert Pass/Fail into numerical values
+encoder = LabelEncoder()
+df["Result"] = encoder.fit_transform(df["Result"])
+
+
+# Input features and target
+X = df[["Hours_Studied", "Attendance", "Previous_Score"]]
+y = df["Result"]
+
+
+# Split dataset into training and testing
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+
+# Create and train model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+
+# Check model accuracy
+y_prediction = model.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_prediction)
+
+print("Model Accuracy:", accuracy * 100, "%")
+
+
+# User input for prediction
+print("\nEnter Student Details")
+
+hours = int(input("Enter study hours: "))
+attendance = int(input("Enter attendance percentage: "))
+score = int(input("Enter previous score: "))
+
+
+# Prediction
+result = model.predict(
+    [[hours, attendance, score]]
+)
+
+
+# Display result
+if result[0] == 1:
+    print("\nPrediction: Student is likely to PASS")
+else:
+    print("\nPrediction: Student is likely to FAIL")
